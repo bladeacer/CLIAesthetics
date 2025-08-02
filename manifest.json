@@ -1,11 +1,11 @@
 {
-	"id": "sample-plugin",
-	"name": "Sample Plugin",
+	"id": "cli-aesthetics",
+	"name": "CLI Aesthetics",
 	"version": "1.0.0",
-	"minAppVersion": "0.15.0",
-	"description": "Demonstrates some of the capabilities of the Obsidian API.",
-	"author": "Obsidian",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"minAppVersion": "1.6.3",
+	"description": "A plugin which bring the aesthetics of CLI programmes like sl, cmatrix to Obsidian",
+	"author": "bladeacer",
+	"authorUrl": "https://github.com/bladeacer",
+	"fundingUrl": "https://github.com/sponsors/bladeacer",
 	"isDesktopOnly": false
 }
