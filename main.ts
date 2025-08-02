@@ -1,32 +1,51 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
-
-// Remember to rename these classes and interfaces!
+import { App, Editor, MarkdownView, ItemView, Modal, Notice, Plugin, PluginSettingTab, Setting, WorkspaceContainer } from 'obsidian';
 
 interface CLIAesthPluginSettings {
 	mySetting: string;
 }
 
-const DEFAULT_SETTINGS: CLIAesthPluginSettings = {
-	mySetting: 'default'
+declare module "obsidian" {
+	interface App {
+		internalPlugins: {
+			plugins: {
+				switcher: { enabled: boolean };
+			};
+		};
+		commands: {
+			executeCommandById: (commandID: string) => boolean;
+		};
+	}
 }
+
 
 export default class CLIAesthPlugin extends Plugin {
 	settings: CLIAesthPluginSettings;
 
 	async onload() {
-		await this.loadSettings();
+		const { workspace } = this.app;
+		this.registerEvent(this.app.workspace.on('active-leaf-change', async leaf => {
+			const currentView = leaf?.view;
+			if (currentView.getViewType() === 'empty') {
+				new Notice("New tab detected with display text:\n" + currentView.getDisplayText());
+			}
+		}));
 
-		// This creates an icon in the left ribbon.
-		const ribbonIconEl = this.addRibbonIcon('dice', 'CLI Aesthethics Plugin', (evt: MouseEvent) => {
-			// Called when the user clicks the icon.
-			new Notice('This is a notice!');
-		});
-		// Perform additional things with the ribbon
-		ribbonIconEl.addClass('my-plugin-ribbon-class');
+		// this.addRibbonIcon('dice', 'Activate view', () => {
+		// 	new Notice("Current view is: ");
+		// 	new Notice(workspace);
+		// });
 
-		// This adds a status bar item to the bottom of the app. Does not work on mobile apps.
-		const statusBarItemEl = this.addStatusBarItem();
-		statusBarItemEl.setText('Status Bar Text');
+		// // This creates an icon in the left ribbon.
+		// const ribbonIconEl = this.addRibbonIcon('dice', 'CLI Aesthethics Plugin', (evt: MouseEvent) => {
+		// 	// Called when the user clicks the icon.
+		// 	new Notice('This is a notice!');
+		// });
+		// // Perform additional things with the ribbon
+		// ribbonIconEl.addClass('my-plugin-ribbon-class');
+
+		// // This adds a status bar item to the bottom of the app. Does not work on mobile apps.
+		// const statusBarItemEl = this.addStatusBarItem();
+		// statusBarItemEl.setText('Status Bar Text');
 
 		// This adds a simple command that can be triggered anywhere
 		this.addCommand({
@@ -82,10 +101,6 @@ export default class CLIAesthPlugin extends Plugin {
 
 	}
 
-	async loadSettings() {
-		this.settings = Object.assign({}, DEFAULT_SETTINGS, await this.loadData());
-	}
-
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
@@ -121,14 +136,14 @@ class CLIAestSettingTab extends PluginSettingTab {
 		containerEl.empty();
 
 		new Setting(containerEl)
-			.setName('Setting #1')
-			.setDesc('It\'s a secret')
-			.addText(text => text
-				.setPlaceholder('Enter your secret')
-				.setValue(this.plugin.settings.mySetting)
-				.onChange(async (value) => {
-					this.plugin.settings.mySetting = value;
-					await this.plugin.saveSettings();
-				}));
+		.setName('Setting #1')
+		.setDesc('It\'s a secret')
+		.addText(text => text
+			 .setPlaceholder('Enter your secret')
+			 .setValue(this.plugin.settings.mySetting)
+			 .onChange(async (value) => {
+				 this.plugin.settings.mySetting = value;
+				 await this.plugin.saveSettings();
+			 }));
 	}
 }
